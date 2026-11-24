@@ -78,7 +78,7 @@ Substitutions follow the customer's rules, and the door is where they're settled
 | Load the van | Loaded in reverse drop order, cold kept cold |
 | Hand over | Accept or reject each substitute · Rejected items go back on the van |
 | Pay for what came | Charged after delivery at actual weights · Rejected and missing items not charged |
-| Hear what changed | Substitutions sent before the van arrives |
+| Hear what changed | Substitutions sent before the van arrives · Told what was charged and how much of the hold is released |
 
 ## R3 — Trust and care
 

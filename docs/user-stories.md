@@ -106,3 +106,29 @@ delivered, charged; so I can answer a customer.
 
 ### Tasks
 - [ ] US-11.1: order timeline for support
+
+---
+
+# Beyond the walking skeleton
+
+Not part of R0. Advanced stories written ahead of their release because a platform
+decision depends on them; each is built only when its release is reached.
+
+## US-R2.1 — Know what was charged and what is released (R2, later)
+As a customer (Priya), after delivery I'm told what I was charged and how much of the
+hold on my card is being released, so a pending amount in my banking app doesn't look
+like a second charge.
+- Needs R2's held-then-charged payment (card held for the estimate plus a margin,
+  charged after delivery at actual weights); in R0 the estimated total is charged at
+  checkout, so there is nothing to release.
+- Held at checkout £96.91, charged after delivery £85.99, released £10.92: the delivered
+  email and the order page show all three.
+- The released amount can take a few days to leave a bank statement; the message says
+  so.
+- Support (Lin) sees the same three figures on the order timeline, to answer "why is
+  £96.91 still pending?"
+
+### Tasks
+- [ ] US-R2.1.1: held, charged and released amounts on the order
+- [ ] US-R2.1.2: the delivered email shows all three, with the note on bank timing
+- [ ] US-R2.1.3: the three figures on the support timeline
