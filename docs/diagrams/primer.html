@@ -1,0 +1,385 @@
+<!-- SPDX-License-Identifier: MIT -->
+<title>gGrocery Story Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,600;75..100,800&family=Source+Sans+3:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a store's planning wall. Reading sections at text width, set like shelf-edge labels (condensed display, mono prices); the map breaks out full width on a board and scrolls sideways. */
+:root {
+  --board: #eef1ea; --paper: #ffffff; --ink: #18211b; --muted: #58645b; --line: #cdd5cb;
+  --accent: #2f7a32;
+  --act: #24412c; --act-ink: #f3f7f2; --step: #dcead6; --story: #ffe8a8; --story-edge: #e2c873;
+  --cust: #2f5fc4; --pick: #c2560c; --drive: #0f7f86; --supp: #8a3fc0; --ops: #5b6b2e;
+  --label: #fff6c9;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --body: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --board: #121712; --paper: #1a201b; --ink: #e4ebe3; --muted: #9caa9e; --line: #2e3a30;
+  --accent: #7fcf6e;
+  --act: #2f5538; --act-ink: #f3f7f2; --step: #22341f; --story: #3d3618; --story-edge: #5e5426;
+  --cust: #8fa9ff; --pick: #ff9d5c; --drive: #4fd0d6; --supp: #cf9bff; --ops: #b9cc72;
+  --label: #3a3416; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --board: #121712; --paper: #1a201b; --ink: #e4ebe3; --muted: #9caa9e; --line: #2e3a30;
+  --accent: #7fcf6e;
+  --act: #2f5538; --act-ink: #f3f7f2; --step: #22341f; --story: #3d3618; --story-edge: #5e5426;
+  --cust: #8fa9ff; --pick: #ff9d5c; --drive: #4fd0d6; --supp: #cf9bff; --ops: #b9cc72;
+  --label: #3a3416; color-scheme: dark }
+
+body { background: var(--paper); color: var(--ink); font: 17px/1.55 var(--body); }
+.wrap { max-width: 68rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; display: grid; gap: 3.5rem; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 80%; line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 1.8rem; font-weight: 800; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font: 600 0.75rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.15rem; color: var(--muted); max-width: 60ch; }
+header { display: grid; gap: 0.9rem; }
+section { display: grid; gap: 1.25rem; min-width: 0; }
+.stack { display: grid; gap: 0.75rem; min-width: 0; }
+.muted { color: var(--muted); }
+nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; font-size: 0.95rem; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.differs { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+.shelf { background: var(--label); border-top: 4px solid var(--accent); padding: 0.85rem 1rem; display: grid; gap: 0.35rem; align-content: start; }
+.shelf .code { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.shelf h3 { font-size: 1.15rem; }
+
+.sides { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; }
+.side { border-top: 3px solid var(--c); padding-top: 0.75rem; display: grid; gap: 0.35rem; align-content: start; }
+.side h3 { color: var(--c); }
+.c-cust { --c: var(--cust); } .c-pick { --c: var(--pick); } .c-drive { --c: var(--drive); } .c-supp { --c: var(--supp); } .c-ops { --c: var(--ops); } .c-plat { --c: var(--accent); }
+
+.tablebox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line); }
+th { font: 600 0.75rem/1.3 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: var(--board); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+tr.total td { font-weight: 700; }
+tr.hold td { color: var(--muted); font-style: italic; }
+
+ol.life { list-style: none; padding: 0; margin: 0; display: grid; counter-reset: s; }
+ol.life li { counter-increment: s; display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.75rem; padding: 0.55rem 0; border-bottom: 1px dashed var(--line); }
+ol.life li::before { content: counter(s); font: 600 0.85rem/1.6 var(--mono); color: var(--accent); }
+.who { font: 600 0.7rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--c); margin-left: 0.4rem; white-space: nowrap; }
+.when { font: 600 0.78rem/1 var(--mono); color: var(--muted); margin-right: 0.35rem; }
+
+dl.gloss { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.9rem 2rem; margin: 0; }
+dl.gloss div { display: grid; gap: 0.15rem; }
+dt { font-weight: 700; }
+dd { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+.personas { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1.25rem; }
+.persona { border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.2rem; display: grid; gap: 0.7rem; align-content: start; min-width: 0; }
+.persona .head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.persona .role { font: 600 0.72rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--c); }
+.persona h3 { font-size: 1.4rem; }
+.persona .quote { font-style: italic; border-left: 3px solid var(--c); padding-left: 0.75rem; }
+.persona ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; font-size: 0.95rem; }
+.persona .label { font: 600 0.7rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.persona .drives { font-size: 0.9rem; color: var(--muted); }
+
+.boardband { background: var(--board); border-block: 1px solid var(--line); }
+.boardinner { max-width: 68rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem; display: grid; gap: 1.25rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; font-size: 0.88rem; color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; vertical-align: -0.1rem; margin-right: 0.35rem; }
+.mapscroll { overflow-x: auto; padding-bottom: 0.75rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.map { display: grid; gap: 0.5rem; width: max-content; margin: 0 auto; }
+.card { border-radius: 3px; padding: 0.5rem 0.6rem; font-size: 0.85rem; line-height: 1.35; }
+.act { background: var(--act); color: var(--act-ink); font-family: var(--display); font-stretch: 85%; font-weight: 800; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.6rem 0.7rem; }
+.act .who { color: var(--act-ink); opacity: 0.85; margin: 0; display: flex; align-items: center; gap: 0.35rem; }
+.act .who::before { content: ""; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--c); }
+.step { background: var(--step); font-weight: 700; }
+.story { background: var(--story); box-shadow: 0 1px 0 var(--story-edge); }
+.story.ops { background: transparent; border: 1px dashed var(--story-edge); color: var(--muted); font-style: italic; }
+.slice { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 0.75rem; border-top: 2px solid var(--ink); padding-top: 0.45rem; margin-top: 0.6rem; flex-wrap: wrap; }
+.slice b { font-family: var(--display); font-stretch: 85%; font-size: 1.1rem; }
+.slice .rid { font: 600 0.75rem/1 var(--mono); color: var(--accent); }
+.slice span.goal { color: var(--muted); font-size: 0.9rem; }
+.cell { display: grid; gap: 0.4rem; align-content: start; }
+.later { columns: 16rem; column-gap: 2rem; padding-left: 1.1rem; margin: 0; }
+.later li { break-inside: avoid; margin-bottom: 0.3rem; }
+.qs { display: grid; gap: 0.9rem; padding-left: 1.3rem; margin: 0; }
+.qs li { max-width: 70ch; }
+.qs b { display: block; }
+footer { color: var(--muted); font-size: 0.85rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">gluon · third application · draft 1, 2026-11-24</span>
+    <h1>gGrocery: a grocery-delivery primer and story map</h1>
+    <p class="lede">A weekly shop, delivered in a one-hour slot. It looks like gshop's e-commerce until two things bite: delivery is booked against scarce time slots, and the shelf decides what the customer actually gets. What follows is the domain in one sitting, the people it serves, and a first cut of the map.</p>
+    <nav aria-label="Sections"><a href="#primer">Primer</a><a href="#personas">Personas</a><a href="#map">Story map</a><a href="#questions">Open questions</a></nav>
+  </header>
+
+  <section id="primer">
+    <span class="eyebrow">Part 1</span>
+    <h2>The domain in one sitting</h2>
+    <p>A grocery order is a promise made days ahead and kept in a single hour: the right food, fresh and cold where it should be, at the door inside the slot. Between the promise and the door, the shelf gets a vote. Items run out, chicken weighs what it weighs, and the customer's rules decide what stands in for what's missing.</p>
+
+    <div class="differs">
+      <div class="shelf"><span class="code">vs gshop · 1</span><h3>Slots, not just stock</h3><p>The customer books a delivery hour before they shop. Each slot has a capacity; a reservation holds a place in it while the basket fills, then lapses if they don't check out.</p></div>
+      <div class="shelf"><span class="code">vs gshop · 2</span><h3>Substitution rules</h3><p>Every line in the basket carries a rule for when it's out of stock: no substitute, anything similar, or a chosen alternative. The picker follows it; the customer accepts or rejects at the door.</p></div>
+      <div class="shelf"><span class="code">vs gshop · 3</span><h3>The price settles late</h3><p>Weighed items and substitutions mean the total isn't known at checkout. The card is held for an estimate and charged for what was actually delivered.</p></div>
+    </div>
+
+    <div class="sides">
+      <div class="side c-cust"><h3>Customer</h3><p>Wants the whole week's shop in one delivery, at a time they're home, with nothing important missing. Judges the service by what's substituted and how.</p></div>
+      <div class="side c-ops"><h3>Store operations</h3><p>Sets the range and prices, and how many orders each slot can take from the pickers and vans on shift.</p></div>
+      <div class="side c-pick"><h3>Picker</h3><p>Walks the store with a pick list in aisle order, weighs, substitutes by the customer's rules, and packs by temperature.</p></div>
+      <div class="side c-drive"><h3>Driver</h3><p>Runs a van route of drops within the slot, settles substitutions at the door and checks ID for age-restricted items.</p></div>
+    </div>
+
+    <div class="stack">
+      <h3>Where the money goes</h3>
+      <p class="muted">An illustrative weekly shop. Real grocers' figures vary; slot charges from free to about £7 and minimum baskets around £40 are common.</p>
+      <div class="tablebox"><table>
+        <thead><tr><th>Line</th><th>When</th><th style="text-align:right">Amount</th></tr></thead>
+        <tbody>
+          <tr><td>Basket, estimated: 42 items, 4 of them weighed</td><td>Checkout</td><td class="num">£84.60</td></tr>
+          <tr><td>Delivery, Thursday 18:00–19:00 (peak)</td><td>Checkout</td><td class="num">£3.50</td></tr>
+          <tr class="total"><td>Estimated total</td><td>Checkout</td><td class="num">£88.10</td></tr>
+          <tr class="hold"><td>Held on the card: the estimate plus 10% for weights and substitutions</td><td>Checkout</td><td class="num">£96.91</td></tr>
+          <tr><td>Chicken thighs weighed 1.12 kg, estimated 1.00 kg</td><td>Pick</td><td class="num">+£0.84</td></tr>
+          <tr><td>Fresh basil out of stock, no substitute allowed: missing</td><td>Pick</td><td class="num">−£0.85</td></tr>
+          <tr><td>Oat milk 1 L out; 2 L substituted at the 1 L price</td><td>Pick</td><td class="num">£0.00</td></tr>
+          <tr><td>Paneer substituted with tofu; rejected at the door</td><td>Door</td><td class="num">−£2.10</td></tr>
+          <tr class="total"><td>Charged after delivery</td><td>After the door</td><td class="num">£85.99</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted">The rest of the hold is released. A basket under the minimum pays a small-basket charge or can't be checked out.</p>
+    </div>
+
+    <div class="stack">
+      <h3>An order's life, against the slot</h3>
+      <ol class="life">
+        <li><span><span class="when">Mon</span><b>Slot reserved.</b> Thursday 18:00–19:00 has space; it's held for the customer for a couple of hours while they shop. <span class="who c-cust">customer</span></span></li>
+        <li><span><span class="when">Mon</span><b>Basket built.</b> Each line gets a substitution rule; weighed items are priced at an estimate. <span class="who c-cust">customer</span></span></li>
+        <li><span><span class="when">Mon</span><b>Checked out.</b> Over the minimum basket; the card is held for the estimate plus a margin; the slot is booked. <span class="who c-cust">customer</span></span></li>
+        <li><span><span class="when">Tue–Wed</span><b>Amended.</b> Items added or removed, even the slot changed, until the cutoff the night before. <span class="who c-cust">customer</span></span></li>
+        <li><span><span class="when">Thu 10:00</span><b>Pick list released.</b> The slot's orders, merged and sorted into aisle order, split into ambient, chilled and frozen totes. <span class="who c-pick">picker</span></span></li>
+        <li><span><span class="when">Thu</span><b>Picked.</b> Weighed items priced at the scale; an empty shelf means a substitute by the customer's rule, or missing. <span class="who c-pick">picker</span></span></li>
+        <li><span><span class="when">Thu 17:15</span><b>Loaded.</b> Totes go on the van in reverse drop order, cold kept cold. <span class="who c-drive">driver</span></span></li>
+        <li><span><span class="when">Thu 17:30</span><b>Told what changed.</b> Substitutions and missing items, and a narrower arrival time, before the van arrives. <span class="who c-plat">platform</span></span></li>
+        <li><span><span class="when">Thu 18:20</span><b>At the door.</b> Substitutes accepted or handed back; ID checked for alcohol; signed for. <span class="who c-drive">driver</span></span></li>
+        <li><span><span class="when">Thu 19:00</span><b>Charged.</b> For what was delivered, at actual weights; the rest of the hold released; receipt sent. <span class="who c-plat">platform</span></span></li>
+        <li><span><span class="when">Later</span><b>Put right.</b> Damaged, short-dated or missing items refunded. <span class="who c-supp">support</span></span></li>
+      </ol>
+    </div>
+
+    <div class="stack">
+      <h3>Where it goes wrong</h3>
+      <div class="tablebox"><table>
+        <thead><tr><th>What happens</th><th>Usual handling</th></tr></thead>
+        <tbody>
+          <tr><td>The slot the customer wants is full</td><td>Show the nearest slots with space; some grocers offer a waitlist</td></tr>
+          <tr><td>The reservation lapses before checkout</td><td>Slot released for others; basket kept; customer books again</td></tr>
+          <tr><td>An item is out of stock at the pick</td><td>Substitute by the customer's rule, or mark it missing; missing items aren't charged</td></tr>
+          <tr><td>A substitute costs more than the original</td><td>Usually charged at the original's price</td></tr>
+          <tr><td>Customer rejects a substitute at the door</td><td>Driver takes it back; not charged</td></tr>
+          <tr><td>Weighed item comes out heavier or lighter</td><td>Charged at actual weight, often within a tolerance</td></tr>
+          <tr><td>No ID, or under age, for alcohol</td><td>Age-restricted items go back on the van; not charged</td></tr>
+          <tr><td>The van is running late</td><td>Customer told with a new time; a missed slot may earn a voucher</td></tr>
+          <tr><td>Nobody home</td><td>Wait a few minutes, call; chilled and frozen go back; delivery charge usually kept</td></tr>
+          <tr><td>Damaged or short-dated item found after delivery</td><td>Support refunds the item, often without a return</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="stack">
+      <h3>Words the domain uses</h3>
+      <dl class="gloss">
+        <div><dt>Slot</dt><dd>A delivery window, usually an hour, on a given day. Priced by demand: peak evenings cost more.</dd></div>
+        <div><dt>Slot reservation</dt><dd>A place in a slot held for one customer for a short time while they shop; it lapses unless they check out.</dd></div>
+        <div><dt>Capacity</dt><dd>How many orders a slot can take, set by vans, drops per route and pickers on shift.</dd></div>
+        <div><dt>Cutoff</dt><dd>The last moment an order can be amended, typically the night before the slot.</dd></div>
+        <div><dt>Amend</dt><dd>Changing a booked order (items, quantities, even the slot) before the cutoff.</dd></div>
+        <div><dt>Substitution rule</dt><dd>What the customer wants if an item is out: no substitute, anything similar, or a chosen alternative.</dd></div>
+        <div><dt>Substitute</dt><dd>The item picked in place of one that's out of stock; accepted or rejected at the door.</dd></div>
+        <div><dt>Pick list (pick walk)</dt><dd>A slot's orders merged into one route through the store, in aisle order.</dd></div>
+        <div><dt>Tote</dt><dd>The crate an order is packed into; one per temperature zone, often several per order.</dd></div>
+        <div><dt>Temperature zone</dt><dd>Ambient, chilled or frozen. Kept apart from pick to door.</dd></div>
+        <div><dt>Weighed item (catch weight)</dt><dd>Sold by weight, priced at an estimate until it's on the scale: meat, fish, loose fruit.</dd></div>
+        <div><dt>Drop</dt><dd>One delivery on a van route.</dd></div>
+        <div><dt>Minimum basket</dt><dd>The smallest order that can be checked out, or that avoids a small-basket charge.</dd></div>
+        <div><dt>Age-restricted item</dt><dd>Alcohol and the like: ID checked at the door, handed back if it fails.</dd></div>
+        <div><dt>Short-dated</dt><dd>Close to its use-by date. Grocers promise a minimum life on delivery.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="personas">
+    <span class="eyebrow">Part 2</span>
+    <h2>Personas</h2>
+    <p>Six people: two customers whose needs pull in different directions (a big weekly shop, and someone who depends on substitutions going right), and one for each side behind the scenes. Each card ends with the stories the persona drives.</p>
+    <div class="personas" id="personaList"></div>
+  </section>
+</div>
+
+<div class="boardband" id="map">
+  <div class="boardinner">
+    <span class="eyebrow">Part 3</span>
+    <h2>Story map</h2>
+    <p>The backbone runs left to right in the order the work happens, from setting up the store to putting things right. Each slice below a line is a release: a thin, usable path end to end, not a component. Scroll sideways along the wall.</p>
+    <div class="legend">
+      <span><i style="background:var(--act)"></i>Activity</span>
+      <span><i style="background:var(--step)"></i>Step</span>
+      <span><i style="background:var(--story)"></i>Story</span>
+      <span><i style="border:1px dashed var(--story-edge)"></i>Seeded, not built</span>
+      <span class="c-cust"><i style="background:var(--c);border-radius:50%"></i>Customer</span>
+      <span class="c-ops"><i style="background:var(--c);border-radius:50%"></i>Store ops</span>
+      <span class="c-pick"><i style="background:var(--c);border-radius:50%"></i>Picker</span>
+      <span class="c-drive"><i style="background:var(--c);border-radius:50%"></i>Driver</span>
+      <span class="c-supp"><i style="background:var(--c);border-radius:50%"></i>Support</span>
+    </div>
+  </div>
+  <div class="mapscroll"><div class="map" id="storyMap" role="table" aria-label="gGrocery story map"></div></div>
+  <div class="boardinner">
+    <h3>Later, not sliced yet</h3>
+    <ul class="later">
+      <li>Recurring weekly order</li><li>Rapid delivery within the hour</li><li>Click and collect</li>
+      <li>Several stores, nearest one serves</li><li>Promotions and multibuys</li><li>Loyalty card prices</li>
+      <li>Dietary filters and nutrition</li><li>Product reviews</li><li>Bagless delivery</li><li>Slot waitlist</li>
+    </ul>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="questions">
+    <span class="eyebrow">Part 4</span>
+    <h2>Open questions for you</h2>
+    <ol class="qs">
+      <li><b>What does a time-slot reservation hold?</b>A place in the slot's delivery capacity, stock for that day, or both? Grocers usually don't hold stock per item; the pick finds out what's there.</li>
+      <li><b>How long is a slot held, and does an open hold count against capacity?</b>Suggested: held for two hours, and yes, it counts, so a full slot is really full.</li>
+      <li><b>Capacity: one number per slot, or worked out?</b>Suggested: one number per slot in the skeleton; from vans, drops per route and pickers later.</li>
+      <li><b>Substitution rules: per item, per order, or both?</b>And who picks the substitute: the picker on the shop floor, a suggestion from the system, or the customer in advance?</li>
+      <li><b>Payment: hold at checkout and charge after delivery?</b>How big a margin over the estimate, and what happens when the final total is above it?</li>
+      <li><b>Cutoff: how long before the slot, and what can change after it?</b>Suggested: 22:00 the night before; nothing changes after it in the skeleton.</li>
+      <li><b>One identity with roles, or separate accounts?</b>Store operations, pickers and drivers need sign-in from Release 1.</li>
+      <li><b>Geography in the sandbox.</b>No map tiles or geocoding are reachable. One store, one delivery area of seeded postcodes, and drops ordered by a seeded sequence keep routes real enough.</li>
+    </ol>
+  </section>
+  <footer>Draft for review. The agreed map becomes <code>apps/ggrocery/docs/user-stories.md</code>.</footer>
+</div>
+
+<script>
+const personas = [
+  { c: "cust", role: "Customer", name: "Priya, 38", tag: "weekly family shop",
+    quote: "I book Thursday evening every week. If that slot's gone, my week falls apart.",
+    about: "Two kids, both parents working. One big shop a week, about 60 items, plus the odd top-up. Builds the basket over a couple of days on her phone.",
+    goals: ["Her usual slot, every week", "Amend the order until the night before", "A total she can predict"],
+    pains: ["Her slot gone while she was still shopping", "Six substitutes she didn't want", "A charge higher than the checkout total"],
+    drives: "Slot booking and reservation, amend before cutoff, substitution rules, held-then-charged payment." },
+  { c: "cust", role: "Customer", name: "George, 74", tag: "lives alone, doesn't drive",
+    quote: "If they're out of my semi-skimmed, don't send me oat milk.",
+    about: "Retired, shops online since his knee operation. Small, regular baskets, the same brands. Reads the substitution email carefully.",
+    goals: ["Exactly what he ordered, or nothing", "Hear about changes before the van arrives", "A driver who carries the bags in"],
+    pains: ["Surprise substitutes", "Short-dated milk", "Minimum basket he struggles to reach"],
+    drives: "Per-item 'no substitute', substitution notice before arrival, accept or reject at the door, short-dated refunds." },
+  { c: "ops", role: "Store operations", name: "Grace, 45", tag: "online operations lead",
+    quote: "Every slot I sell is a promise my pickers and vans have to keep.",
+    about: "Runs the online side of a large store: the range online, how many slots to open, and staffing pickers and vans to match.",
+    goals: ["Slots that fill without overbooking", "Peak slots priced to spread demand", "Fewer substitutions week on week"],
+    pains: ["Selling more slots than vans can run", "Lapsed reservations blocking real customers", "Range online out of step with the shelf"],
+    drives: "Range and prices, slot capacity and pricing, delivery area." },
+  { c: "pick", role: "Picker", name: "Marek, 31", tag: "early-shift picker",
+    quote: "Give me the list in aisle order and tell me what they'll accept if it's gone.",
+    about: "Picks for three slots a morning with a trolley of totes and a handheld scanner. Paid by the shift, measured by items per hour and accuracy.",
+    goals: ["One walk through the store per slot", "Clear substitution rules per item", "Weighing without retyping prices"],
+    pains: ["Guessing what a customer would accept", "Zig-zagging the store", "Chilled totes left out too long"],
+    drives: "Pick list, mark picked, weigh, substitute or mark missing, pack by temperature." },
+  { c: "drive", role: "Driver", name: "Sam, 46", tag: "van driver",
+    quote: "Eight drops, one hour each. Lose ten minutes at the first door and I'm late for the rest.",
+    about: "Runs two routes a day from the store. Loads his own van, settles substitutions at the door and checks ID.",
+    goals: ["Totes loaded in drop order", "Customers who know about substitutes before he knocks", "A quick way to log a rejected item"],
+    pains: ["Doorstep debates about substitutes", "Nobody home with frozen in the van", "Being blamed for picking mistakes"],
+    drives: "Load in drop order, run the route, hand over, rejects and ID checks, running late." },
+  { c: "supp", role: "Support", name: "Lin, 27", tag: "customer-care agent",
+    quote: "Show me what was ordered, picked, substituted and handed back. Then I can be fair.",
+    about: "Handles chats and calls about missing, damaged and short-dated items, and missed slots, within refund rules the business sets.",
+    goals: ["One timeline per order: ordered, picked, delivered, charged", "Refund an item in one action", "See repeat issues by store or picker"],
+    pains: ["Not knowing whether an item was missing or rejected", "Refunds that don't match the charge"],
+    drives: "Order lookup and timeline, item refunds, missed-slot compensation." },
+];
+
+const activities = [
+  { name: "Run the store", c: "ops", who: "Store ops", steps: [["range", "Set range and prices"], ["slots", "Open slots"], ["area", "Set delivery area"]] },
+  { name: "Plan the shop", c: "cust", who: "Customer", steps: [["address", "Check my postcode"], ["book", "Book a slot"], ["browse", "Find products"]] },
+  { name: "Fill the basket", c: "cust", who: "Customer", steps: [["basket", "Add to basket"], ["subs", "Choose substitutions"], ["checkout", "Check out"]] },
+  { name: "Change my mind", c: "cust", who: "Customer", steps: [["amend", "Amend the order"], ["cancel", "Cancel"]] },
+  { name: "Pick", c: "pick", who: "Picker", steps: [["picklist", "Get the pick list"], ["pick", "Pick and weigh"], ["short", "Substitute or mark missing"], ["pack", "Pack for the van"]] },
+  { name: "Deliver", c: "drive", who: "Driver", steps: [["load", "Load the van"], ["route", "Run the route"], ["handover", "Hand over"]] },
+  { name: "Settle", c: "cust", who: "Customer", steps: [["charge", "Pay for what came"], ["hear", "Hear what changed"]] },
+  { name: "Make it right", c: "supp", who: "Support", steps: [["lookup", "Look up an order"], ["resolve", "Refund"]] },
+];
+
+// "~" marks a seeded stand-in rather than a built story.
+const releases = [
+  { id: "R0", name: "Walking skeleton", goal: "One seeded store, one picker, one van: a weekly shop goes from slot to doorstep, with a substitution on the way.", stories: {
+    range: ["~Range seeded: products, prices, some weighed"], slots: ["~Hour slots seeded, a fixed number of orders each"], area: ["~One delivery area of seeded postcodes"],
+    address: ["Enter a postcode; told if it's outside the area"], book: ["See slots with space", "Reserve a slot"], browse: ["Browse products by aisle"],
+    basket: ["Add, change quantity, remove"], subs: ["Allow or refuse a substitute per item"], checkout: ["Pay with a saved test card", "Slot booked with the order"],
+    picklist: ["The slot's orders as a pick list"], pick: ["Mark each line picked"], short: ["Out of stock: substitute or mark missing"], pack: ["Mark the order packed"],
+    load: ["~One van, one driver, always on shift"], route: ["The slot's orders, in drop order"], handover: ["Mark delivered"],
+    charge: ["Charged for what was picked"], hear: ["Email: substitutions and missing items", "Email: delivered"],
+    lookup: ["See an order and its timeline"] } },
+  { id: "R1", name: "Real slots", goal: "Slots are a scarce promise: held, priced, cut off and amendable.", stories: {
+    range: ["Staff sign in"], slots: ["Capacity per slot from vans and pickers", "Peak and off-peak slot prices"], area: ["Delivery area by postcode district"],
+    book: ["Reservation held two hours, then released", "Slot full: nearest slots offered"], browse: ["Search"],
+    basket: ["Basket kept when a reservation lapses", "Minimum basket"], checkout: ["Delivery charge by slot", "Reservation lapsed: book again"],
+    amend: ["Change items until the cutoff", "Change the slot before the cutoff"], cancel: ["Cancel free before the cutoff"],
+    picklist: ["Pick list released at the cutoff"],
+    hear: ["Reminder before a reservation lapses", "Reminder before the cutoff"] } },
+  { id: "R2", name: "Real substitutions", goal: "Substitutions follow the customer's rules, and the door is where they're settled.", stories: {
+    subs: ["Pick a specific substitute", "Rules: same brand other size, anything similar, none", "A default rule for the whole order"],
+    checkout: ["Card held for the estimate plus a margin"],
+    pick: ["Weighed items priced at the scale"], short: ["Substitute suggested from the rule", "Substitute charged no more than the original"], pack: ["Totes by temperature: ambient, chilled, frozen"],
+    load: ["Loaded in reverse drop order, cold kept cold"], handover: ["Accept or reject each substitute", "Rejected items go back on the van"],
+    charge: ["Charged after delivery at actual weights", "Rejected and missing items not charged"], hear: ["Substitutions sent before the van arrives"] } },
+  { id: "R3", name: "Trust and care", goal: "When it goes wrong, it's put right quickly, and the weekly shop gets easier.", stories: {
+    browse: ["Favourites and previous orders"], book: ["Book my usual slot again"],
+    route: ["Running late: customer told, new time"], handover: ["ID check for age-restricted items", "Nobody home: wait, then chilled and frozen go back"],
+    charge: ["Delivery pass: no delivery charge"],
+    lookup: ["Substitutions, rejections and refunds on the timeline"], resolve: ["Refund a missing, damaged or short-dated item", "Voucher for a missed slot"] } },
+];
+
+const esc = s => s.replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+
+document.getElementById("personaList").innerHTML = personas.map(p => `
+  <article class="persona c-${p.c}">
+    <div class="head"><h3>${esc(p.name)}</h3><span class="role">${esc(p.role)} · ${esc(p.tag)}</span></div>
+    <p class="quote">“${esc(p.quote)}”</p>
+    <p>${esc(p.about)}</p>
+    <div><span class="label">Goals</span><ul>${p.goals.map(g => `<li>${esc(g)}</li>`).join("")}</ul></div>
+    <div><span class="label">Frustrations</span><ul>${p.pains.map(g => `<li>${esc(g)}</li>`).join("")}</ul></div>
+    <p class="drives"><b>Drives:</b> ${esc(p.drives)}</p>
+  </article>`).join("");
+
+const steps = activities.flatMap(a => a.steps.map(([id, name]) => ({ id, name })));
+const map = document.getElementById("storyMap");
+map.style.gridTemplateColumns = `repeat(${steps.length}, 9.5rem)`;
+let html = "";
+let col = 1;
+for (const a of activities) {
+  html += `<div class="card act c-${a.c}" role="columnheader" style="grid-column:${col} / span ${a.steps.length}"><span>${esc(a.name)}</span><span class="who">${esc(a.who)}</span></div>`;
+  col += a.steps.length;
+}
+html += steps.map(s => `<div class="card step" role="columnheader">${esc(s.name)}</div>`).join("");
+for (const r of releases) {
+  html += `<div class="slice" role="row"><span class="rid">${r.id}</span><b>${esc(r.name)}</b><span class="goal">${esc(r.goal)}</span></div>`;
+  html += steps.map(s => {
+    const items = r.stories[s.id] || [];
+    return `<div class="cell" role="cell">${items.map(t => t.startsWith("~")
+      ? `<div class="card story ops">${esc(t.slice(1))}</div>`
+      : `<div class="card story">${esc(t)}</div>`).join("")}</div>`;
+  }).join("");
+}
+map.innerHTML = html;
+</script>

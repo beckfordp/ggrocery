@@ -1,0 +1,11 @@
+# ggrocery's services and frontends are their own independent git repos.
+services/*
+!services/README.md
+frontends/*
+!frontends/README.md
+
+target/
+node_modules/
+.DS_Store
+.idea/
+.claude/
